@@ -1,0 +1,158 @@
+openapi: 3.0.3
+
+info:
+  title: LSML2 Final Project API
+  description: MDS student final project of the LSML2 course
+  version: 1.0.0
+
+paths:
+  /ping:
+    get:
+      summary: Test server health
+      responses:
+        '200':
+          description: Server is running
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+  /train:
+    post:
+      summary: Train Random Forest model using custom hyper parameters
+      requestBody:
+        content:
+          application/json:
+            schema: 
+              type: object
+              properties:
+                experiment_name:
+                  type: string
+                  example: "rf-experiment-65536"
+                train_params:
+                  type: array
+                  items:
+                    type: object
+                  example: [
+                    {"n_estimators": 100, "min_samples_split": 4, "criterion": "entropy"},
+                    {"n_estimators": 200, "min_samples_split": 2, "criterion": "gini"}
+                  ]
+      responses:
+        '200':
+          description: Train has been started
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  msg:
+                    type: string
+                    example: "Train has been started, Celery task ID: 7b420ab2-b70c-407a-b7b4-01bf59ba9831"
+
+  /train-status/{task_id}:
+    get:
+      summary: Get train status
+      parameters:
+        - in: path
+          name: task_id
+          schema:
+            type: string
+            example: 7b420ab2-b70c-407a-b7b4-01bf59ba9831
+          required: true
+          description: Celery task ID
+      responses:
+        '200':
+          description: Status of task (IN_PROGRESS or DONE)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: IN_PROGRESS
+
+  /deploy-best-model:
+    post:
+      summary: Deploy the best model to production
+      requestBody:
+        content:
+          application/json:
+            schema: 
+              type: object
+              properties:
+                experiment_name:
+                  type: string
+                  example: "rf-experiment-65536"
+      responses:
+        '200':
+          description: Deploying has been started
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  msg:
+                    type: string
+                    example: "Deploying has been started, Celery task ID: 7b420ab2-b70c-407a-b7b4-01bf59ba9831"
+  /predict:
+    post:
+      summary: Predict answer
+      requestBody:
+        content:
+          application/json:
+            schema: 
+              type: object
+              properties:
+                passage:
+                  type: string
+                  example: foo
+                question:
+                  type: string
+                  example: bar
+      responses:
+        '200':
+          description: Prediction task has been started
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  task_id:
+                    type: string
+                    example: 7b420ab2-b70c-407a-b7b4-01bf59ba9831
+
+  /predict/{task_id}:
+    get:
+      summary: Get prediction task result
+      parameters:
+        - in: path
+          name: task_id
+          schema:
+            type: string
+            example: 7b420ab2-b70c-407a-b7b4-01bf59ba9831
+          required: true
+          description: Celery task ID
+      responses:
+        '200':
+          description: Prediction task result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: DONE        
+                  answer:
+                    type: string
+                    example: "yes"

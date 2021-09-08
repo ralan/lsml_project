@@ -1,0 +1,19 @@
+amqp
+argh
+celery
+connexion[swagger-ui]
+flask
+# flask-migrate
+# flask-sqlalchemy
+gensim
+gunicorn
+mlflow
+numpy
+# mysqlclient
+pandas
+# pyamqp
+pytest
+redis
+sentry-sdk[flask]
+sklearn
+watchdog
