@@ -46,3 +46,8 @@ $ docker-compose up
 - http://localhost/api/ui - API
 - http://localhost:5000 - MLFlow server
 
+
+### Already deployed public service
+
+- http://lsml-project.fun
+
